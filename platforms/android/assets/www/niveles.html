@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Jueg&oacute;gica</title>
+    	<meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />     
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+
+		<style>
+			.header {
+				background: url('images/niveles-title.png') no-repeat center bottom transparent;
+				height: 4em;
+				max-width: 22.5em;
+				margin: 0 auto;
+				text-align: center;
+			}
+			.container {
+				margin: 0 auto;
+			}
+			.content {
+				max-width: 22.5em;
+				margin: 0 auto;				
+			}
+			body {
+				background: url('images/background.png') repeat top transparent;
+				width: 100%;
+				overflow: hidden;		
+				margin: 0;
+				clear: both;
+			}
+			.button {
+				padding-top: 2.68em;
+				clear: both;
+			}
+			ul.level-table {
+				list-style: none;
+				font-size: 0px;
+				padding: 0px;
+				padding-top: 8px;
+			}
+			ul.level-table li.blocked {
+				background: url('images/blocked.png') no-repeat center top transparent;
+			}
+			ul.level-table li {
+				display: inline-block;
+				background: url('images/bgnum.png') no-repeat center top transparent;
+				font-size: 16px;
+				font-size: 1rem;
+				width: 42%;
+				padding: 10px;
+				//margin: 0 0 2.5% 2.5%;
+				text-align: center;
+				height: 99px;
+				padding-top: 30px;
+			}
+			.more, 
+			.home {
+				text-align: center;
+			}
+		</style>
+		<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+
+		$('.blocked a').live('click', function(e) {
+        e.preventDefault();
+    });
+
+
+    $(document).ready(function () {
+      $.getJSON("http://juegogica.tesis-oys.com.ar/ws.php?ws=levels", function(data) {
+        console.log(data);
+  
+        $.each(data.level, function(key, value) {
+            $('.level-table').append('<li class="'+value.level_id+' blocked" ><a href="'+value.path+'"><img src="images/'+value.level_id+'.png" ></a></li>');
+        });
+      });
+    });
+
+
+    function fillLevels(uid) {
+      $.getJSON("http://juegogica.tesis-oys.com.ar/ws.php?ws=ulevels&uid="+uid, function(data) {
+        console.log(data);
+  
+        $.each(data.levels, function(key, value) {
+            $('.level-table .'+value.level_id).removeClass("blocked");
+        });
+      });
+    }
+
+		</script>	
+  </head>
+  <body onload="getStatus();">
+		<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+        <script type="text/javascript">
+            var apiTest = function () { 
+                facebookConnectPlugin.api( "me/?fields=id,email", ["user_birthday"],
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) }); 
+            }
+           
+            var getStatus = function () { 
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+				        if(response.status === 'connected') {
+							apiCall();
+				       	}
+    				 },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+            
+            var apiCall = function () { 
+                facebookConnectPlugin.api( "me/?fields=id", ["public_profile"],
+                    function (response) { 
+                    	fillLevels(response["id"]);
+          			},
+                    function (response) { alert(JSON.stringify(response)) }); 
+            }
+        </script>
+
+		<div class="container">
+	 		<div class="header">
+	 			<img src="images/header-niveles.png" />
+	 		</div>
+		    <div class="content">
+				<ul class="level-table">
+				</ul>	
+        		<div class="more">
+          			<a href="#"><img src='images/arrow.png' /></a>
+        		</div>
+        		<div class="home">
+          			<a href="home.html"><img src='images/inicio.png' /></a>
+        		</div>
+	    	</div>
+		</div>
+  </body>
+</html>

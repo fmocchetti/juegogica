@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Jueg&oacute;gica</title>
+    	<meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />     
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    	<style>	
+			@media (min-width: 361px) {
+				.header,
+				.content  {
+					max-width: 22.5em;
+				}		
+		
+			}
+			#loginbutton {display: none;}
+			.container {
+				margin: 0 auto;
+			}
+			.content {
+				margin-top: 0.625em;
+				margin: 0 auto;
+			}
+			body {
+				background: url('images/background.png') repeat top transparent;
+				width: 100%;
+				overflow: hidden;		
+				margin: 0;
+				clear: both;
+				text-align: center;
+			}
+			p {
+				color: white;
+				font-family: Arial;
+			}	
+			#loginButton {
+				background: url("images/facebook-login.png") no-repeat 0 0 transparent;
+				width: 202px;
+				height: 46px;
+				cursor: pointer;
+				margin: 0 auto;
+			}
+			.logoapp {
+				padding-top: 60%;
+				padding-bottom: 13%;
+			}
+		</style>
+		
+   	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+   	
+	</head>
+  <body onload="getStatus();">
+		<div class="container">
+	    <div class="content">
+			<img class="logoapp" src="images/juegogica-land.png">
+			<div id="loginButton" onclick="login();" />
+	   	</div>
+		</div>
+	<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+        <script type="text/javascript">
+            var login = function () {
+                if (!window.cordova) {
+                    var appId = prompt("Enter FB Application ID", "");
+                    facebookConnectPlugin.browserInit(appId);
+                }
+                facebookConnectPlugin.login( ["email", "public_profile"]);
+                setTimeout(function() {
+					window.location.href = "home.html";
+				}, 1000);
+            }
+           
+            var getStatus = function () { 
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+						if(response && response.status == 'connected') {
+ 							document.getElementById('loginButton').style.display = 'none';
+							setTimeout(function() {
+								window.location.href = "home.html";
+							}, 1000);
+						} else {
+							document.getElementById('loginButton').style.display = 'block';
+						}
+						},
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+        </script>	
+		
+  </body>
+</html>

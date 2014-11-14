@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Jueg&oacute;gica</title>
+    	<meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />     
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+
+ 		<style>
+		
+			.header {
+				background: url('images/niveles-title.png') no-repeat center bottom transparent;
+				height: 4em;
+				max-width: 22.5em;
+				margin: 0 auto;
+				text-align: center;
+			}
+			.container {
+				margin: 0 auto;
+			}
+			.content {
+				min-height: 24em;
+				max-width: 22.5em;
+				margin: 0 auto;				
+			}
+			body {
+				background: url('images/background.png') repeat top transparent;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;		
+				margin: 0;
+				clear: both;
+			}
+			.footer {	
+				min-height: 7.5em;
+				max-width: 22.5em;
+				margin: 0 auto;				
+			}
+			.content-wrapper {
+				background-color: #40186a;
+				border-radius: 25px;
+				min-height: 22.063em;
+			 	margin: 10px;
+				margin-top: 0px;
+				padding: 17px;
+				clear: both;
+				color: white;
+			}
+			.button {
+				display: inline-block;
+				background: url('images/button-bkg.png') no-repeat center top transparent;
+				width: 40%;
+				padding: 10px;
+				margin: 0 0 2.5% 2.5%;
+				height: 50px;
+				text-align: center;
+				padding-top: 20px;
+			}
+			.lifes {
+				width: 129px;
+				position: relative;
+				float: right;
+			}			
+			.lifes ul {
+				list-style: none;
+				margin: 0;
+			}	
+			.lifes ul li {
+				display: inline;
+			}	
+			.check {
+				margin-left: 50px;
+				height: 15px;
+			}
+			.item {
+				padding: 0 12px;
+				vertical-align: top;
+				height: 24px;
+			}
+			.step {
+				margin-left: 37px;
+				padding: 10px 0;
+			}
+			.ui-dialog {
+				background-color: #edd116;
+				border-radius: 25px;
+				border: 2px solid #cba50f;
+				color: #300f52;
+				padding: 10px;
+			}
+			.ui-button {
+				float: right;
+				margin-right: 10px;
+			}
+		</style>
+    	
+    	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    	<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+  		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <script>
+  $(function() {
+    $( "#dialog" ).dialog({width: 250, height: 170, modal: true, show: "fold", hide: "scale" });
+    $( "#ganaste" ).dialog({ autoOpen: false, width: 250, height: 170, modal: true, show: "fold", hide: "scale"  });
+  	$( "#perdiste" ).dialog({ autoOpen: false, width: 250, height: 170, modal: true, show: "fold", hide: "scale",   close: function( event, ui ) {window.location.href = "niveles.html"; }  });
+  });
+  </script>
+
+    	<script type="text/javascript" charset="utf-8" >
+    	var db;
+		  var step = 1;
+   		var lifes = 3;
+	  	var arrSolutions = [];
+  		var maxSteps = 1;
+		  var userid = 0;
+	
+
+ 			// Wait for device API libraries to load
+    	//
+    	document.addEventListener("deviceready", onDeviceReady, false);
+		
+    	// device APIs are available
+    	//
+    	function onDeviceReady() {}
+    	
+    	
+    	// Transaction error callback
+    	//
+    	function errorCB(tx, err) {
+	        alert("Error processing SQL: "+err);
+	    }
+	    
+    	$('.step').live('click', function() {
+     	    	var solSelected = $(this).attr('id');
+     	    	if(!$(this).hasClass("clicked")) {
+     	    		if( arrSolutions[step] == solSelected) {
+     	    			$(this).find('img.check').attr("src","images/tilde.png");
+     	    			$(this).addClass("clicked");
+  						if(step == maxSteps) {
+	  						$( "#ganaste" ).dialog( "open" );
+	  						$('.next img').attr("src","images/nivel2-act.png");
+	  						unlockLevel();
+	  					}
+							step++;	  					
+  					} else {
+	  					$(".life"+lifes+" img").attr("src","images/star-red.png");
+  						$(this).find('img.check').attr("src","images/cruz.png");
+  						lifes--;  					
+  						if(lifes == 0) {
+	  						$( "#perdiste" ).dialog( "open" );
+	  					}
+  					}
+  				}
+		});
+
+		function fillUserData(uid) {
+			userid = uid;
+		}
+		
+    function unlockLevel() {
+      $.getJSON("http://juegogica.tesis-oys.com.ar/ws.php?ws=ulocklevel&uid="+userid+"&lid=2", function(data) {
+        console.log(data);
+      });
+    }
+
+
+		$(document).ready(function () {
+			$.getJSON("http://juegogica.tesis-oys.com.ar/ws.php?ws=steps", function(data) {
+				console.log(data);
+	
+				$.each(data.step, function(key, value) {
+						$('.content-wrapper').append('<div id="'+ (key + 1) +'" class="step" >'+ (key + 1) +'. <img class="item" src="'+value.path+'" /> '+value.content+' <img class="check" src="" /></div>');
+						if(value.step_id == 1){
+     	    			$('.content-wrapper #'+(key + 1)).find('img.check').attr("src","images/tilde.png");
+     	    			$('.content-wrapper #'+(key + 1)).find('img.check').attr("title","Â¡Te damos la primer solucion como ayuda!");
+     	    			$('.content-wrapper #'+(key + 1)).addClass("clicked");
+								step++;
+						}
+						arrSolutions[value.step_id] = (key + 1);
+						maxSteps = (key + 1);
+				});
+				console.log(arrSolutions);
+			});
+		});
+	</script>
+    	
+  </head>
+    <body onload="getStatus();">
+		<script type="text/javascript" src="js/facebookConnectPlugin.js"></script>
+        <script type="text/javascript">
+            var apiTest = function () { 
+                facebookConnectPlugin.api( "me/?fields=id,email", ["user_birthday"],
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) }); 
+            }
+           
+            var getStatus = function () { 
+                facebookConnectPlugin.getLoginStatus( 
+                    function (response) { 
+				        if(response.status === 'connected') {
+							apiCall();
+				       	}
+    				 },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+            
+            var apiCall = function () { 
+                facebookConnectPlugin.api( "me/?fields=id", ["public_profile"],
+                    function (response) { 
+                    	fillUserData(response["id"]);
+          			},
+                    function (response) { alert(JSON.stringify(response)) }); 
+            }
+        </script>
+		<div class="container">
+	 		<div class="header">
+	 			<img src="images/soltitle.png" />
+	 		</div>	    	
+	 		<div class="content">
+	    		<div class="lifes">
+	    			<ul>
+	    				<li class="life1">	
+	    					<img src="images/star-yellow.png" />
+	    				</li>
+	    				<li class="life2">
+	    					<img src="images/star-yellow.png" />
+	    				</li>
+	    				<li class="life3">
+	    					<img src="images/star-yellow.png" />
+	    				</li
+	    			</ul>	    				
+	    		</div>
+				<div class="content-wrapper">
+					<p>Ingres&#225; la secuencia ordenada que resuelve el problema:</p>
+				</div>
+			</div>
+			<div class="footer">	
+				<div class="button back">
+					<a href="niveles.html"><img src="images/volver.png" /></a>
+				</div>
+				<div class="button next">
+					<a href="#"><img src="images/nivel2.png" /></a>
+				</div>
+			</div>
+		</div>
+		<div id="dialog" title="Ayuda">
+		  <p>¡Por ser el primer nivel, te damos el primer paso como ayuda!</p>
+		</div>
+		<div id="ganaste" title="Ganaste :D">
+		  <p>¡Superaste el primer Nivel! A ver como lo haces en el siguiente</p>
+		</div>
+		<div id="perdiste" title="Perdiste :(">
+		  <p>No te desanimes, intentalo de vuelta :)</p>
+		</div>
+  </body>
+</html>

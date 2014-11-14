@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.juegogica.main" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Juegogica</name>
+    <description>
+        Una app para enseñar a los chicos logica jugando.
+    </description>
+    <icon src="res/drawable/icon.png" />
+    <author email="fede.mo13990@tesis-oys.com.ar" href="http://www.tesis-oys.com.ar">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="Fullscreen" value="false" />
+</widget>
